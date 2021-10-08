@@ -10,6 +10,7 @@ let StudentSchema = new mongoose.Schema(
 		longtitude: { type: Number, required: true },
 		interest: { type: String, required: true },
 		education: { type: String, required: true },
+		imageUrl: { type: String, required: true },
 	},
 	{
 		timestamps: true,

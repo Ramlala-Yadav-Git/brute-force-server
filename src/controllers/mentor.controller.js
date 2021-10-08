@@ -6,21 +6,22 @@ const router = express.Router();
 router.post("/", async (req, res) => {
 	let mentor;
 	try {
-		// mentor = await Mentor.find({ email: req.body.email }).lean().exec();
-		// if (mentor) {
-		// 	return res.status(201).json({ mentor });
-		// }
-		console.log("k");
-		mentor = await Mentor.create({
-			name: req.body.name,
-			age: Number(req.body.age),
-			gender: req.body.gender,
-			email: req.body.email,
-			latitude: Number(req.body.latitude),
-			longtitude: Number(req.body.longtitude),
-			specialization: req.body.specialization,
-			company: req.body.company,
-		});
+		mentor = await Mentor.findOne({ email: req.body.email }).lean().exec();
+		if (!mentor) {
+			mentor = await Mentor.create({
+				name: req.body.name,
+				age: Number(req.body.age),
+				gender: req.body.gender,
+				email: req.body.email,
+				latitude: Number(req.body.latitude),
+				longtitude: Number(req.body.longtitude),
+				specialization: req.body.specialization,
+				company: req.body.company,
+				imageUrl: req.body.imageUrl,
+				rating: req.body.rating,
+			});
+		}
+		console.log(mentor.name);
 		return res.status(201).json({ mentor });
 	} catch (e) {
 		console.log(e);

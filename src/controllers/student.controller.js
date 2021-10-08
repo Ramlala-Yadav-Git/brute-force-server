@@ -20,6 +20,7 @@ router.post("/", async (req, res) => {
 			longtitude: Number(req.body.longtitude),
 			interest: req.body.interest,
 			education: req.body.education,
+			imageUrl: req.body.imageUrl,
 		});
 		return res.status(201).json({ student });
 	} catch (e) {

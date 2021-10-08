@@ -9,7 +9,9 @@ let MentorSchema = new mongoose.Schema(
 		latitude: { type: Number, required: true },
 		longtitude: { type: Number, required: true },
 		specialization: { type: String, required: true },
-		cNumber: { type: String, required: true },
+		company: { type: String, required: true },
+		imageUrl: { type: String, required: true },
+		rating: { type: Number, required: true },
 	},
 	{
 		timestamps: true,
