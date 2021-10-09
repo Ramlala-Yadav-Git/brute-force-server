@@ -53,44 +53,54 @@ router.post("/globalbook/:id", async (req, res) => {
 	}
 });
 
-router.post("/:id/topic/:topicid", async (req, res) => {
+router.post("/:id/book/:bookid", async (req, res) => {
 	let user;
+	let book;
 	try {
-		user = await User.findById(req.params.id)
-			.populate("followers")
-			.populate("followingTopics")
-			.populate("following")
+		user = await User.findById(req.params.id).lean().exec();
+		book = await Blog.findById(req.params.bookid)
+			.populate("comments.author")
+			.populate("seller")
 			.lean()
 			.exec();
-		const str = user.followingTopics.map((item) => {
-			return item.title;
-		});
-		const topic = await Topic.findById(req.params.topicid).lean().exec();
-		if (!str.includes(topic.title)) {
-			const topicList = [...user.followingTopics, req.params.topicid];
-			user = await User.findByIdAndUpdate(req.params.id, {
-				followingTopics: topicList,
+		let data;
+		if (book.seller.email === user.email) {
+			data = [...book.comments];
+		} else {
+			data = book.comments.filter((item) => {
+				console.log(item.author.email, user.email, book.seller.email);
+				return (
+					item.author.email === user.email ||
+					item.author.email === book.seller.email
+				);
 			});
 		}
-		res.status(200).send({ status: "success", message: "Added Topics" });
+		res.status(201).send({ data });
 	} catch (e) {
+		console.log(e);
 		return res
 			.status(400)
 			.send({ status: "failed", message: "Something went wrong" });
 	}
 });
-router.post("/:blogid/comment", async (req, res) => {
-	let blog;
+router.patch("/:id/book/:bookid", async (req, res) => {
+	let user;
+	let book;
 	try {
-		blog = await Blog.findById(req.params.blogid).lean().exec();
-		console.log(blog);
-		const commentList = [...blog.comment, req.body];
-		console.log(commentLists);
-		blog = await Blog.findByIdAndUpdate(req.params.blogid, {
-			comments: commentList,
-		});
-		res.status(200).send({ status: "success", message: "commented" });
+		book = await Blog.findById(req.params.bookid).lean().exec();
+		console.log(book.comments);
+		const payload = { text: req.body.text, author: req.params.id };
+		let data = [...book.comments, payload];
+		book = await Blog.findByIdAndUpdate(
+			req.params.bookid,
+			{ comments: data },
+			{
+				new: true,
+			}
+		);
+		res.status(200).send({ data: book });
 	} catch (e) {
+		console.log(e);
 		return res
 			.status(400)
 			.send({ status: "failed", message: "Something went wrong" });
