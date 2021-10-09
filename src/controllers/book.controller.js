@@ -2,11 +2,16 @@ const express = require("express");
 const { multerUploads } = require("../middlewares/multer");
 const upload = require("../middlewares/upload");
 const Blog = require("../models/book.model");
+const User = require("../models/user.model");
 const router = express.Router();
 
 router.post("/", multerUploads, upload, async (req, res) => {
 	let blog;
+	let location;
 	try {
+		const user = await User.findById(req.body.seller).lean().exec();
+		location = user.location;
+		console.log(location);
 		blog = await Blog.findOne({
 			title: req.body.title,
 			location: req.body.location,
@@ -14,7 +19,7 @@ router.post("/", multerUploads, upload, async (req, res) => {
 		})
 			.lean()
 			.exec();
-		console.log("blog", blog);
+		console.log("blog", req.body.location);
 		if (!blog) {
 			blog = await Blog.create({
 				title: req.body.title,
@@ -25,7 +30,7 @@ router.post("/", multerUploads, upload, async (req, res) => {
 				author: req.body.author,
 				seller: req.body.seller,
 				condition: req.body.condition,
-				location: req.body.location,
+				location: req.body.location || location,
 				comments: [],
 			});
 		}
