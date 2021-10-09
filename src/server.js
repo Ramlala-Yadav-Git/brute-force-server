@@ -6,6 +6,7 @@ const userController = require("./controllers/user.controller");
 const topicsController = require("./controllers/topics.controller");
 const bookController = require("./controllers/book.controller");
 const routeController = require("./routes/routes");
+const globalController = require("./controllers/global.controller")
 const connect = require("./configs/db");
 
 require("dotenv").config();
@@ -22,6 +23,7 @@ app.use("/users", userController);
 app.use("/topics", topicsController);
 app.use("/books", bookController);
 app.use("/", routeController);
+app.use("/global", globalController)
 
 const port = process.env.PORT || "2345";
 
