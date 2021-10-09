@@ -7,21 +7,23 @@ const router = express.Router();
 router.post("/", async (req, res) => {
 	let user;
 	try {
+		console.log(req.body);
 		user = await User.findOne({ email: req.body.email }).lean().exec();
 		if (!user) {
 			user = await User.create({
 				name: req.body.name,
 				email: req.body.email,
-				familyName: req.body.familyName,
-				givenName: req.body.givenName,
 				imageUrl: req.body.imageUrl,
-				followers: [],
-				following: [],
-				followingTopics: [],
+				location: req.body.location,
+			});
+		} else {
+			user = await User.findByIdAndUpdate(user._id, req.body, {
+				new: true,
 			});
 		}
 		return res.status(201).json({ user });
 	} catch (e) {
+		console.log(e);
 		return res
 			.status(400)
 			.send({ status: "failed", message: "Something went wrong" });
@@ -30,13 +32,7 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
 	let users;
 	try {
-		users = await User.find()
-			.populate("followers")
-			.populate("followingTopics")
-			.populate("following")
-			.lean()
-			.exec();
-
+		users = await User.find().lean().exec();
 		return res.status(200).json({ users });
 	} catch (e) {
 		return res
@@ -46,12 +42,7 @@ router.get("/", async (req, res) => {
 });
 router.get("/:id", async (req, res) => {
 	try {
-		const user = await User.findById(req.params.id)
-			.populate("followers")
-			.populate("followingTopics")
-			.populate("following")
-			.lean()
-			.exec();
+		const user = await User.findById(req.params.id).lean().exec();
 		return res.status(200).json({ user });
 	} catch (e) {
 		return res

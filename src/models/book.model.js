@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-let BlogSchema = new mongoose.Schema(
+let BookSchema = new mongoose.Schema(
 	{
 		title: { type: String, required: true },
 		description: { type: String, required: true },
@@ -8,6 +8,7 @@ let BlogSchema = new mongoose.Schema(
 		type: { type: String, required: true },
 		price: { type: Number, required: true },
 		condition: { type: String, required: true },
+		location: { type: String, required: true },
 		seller: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "User",
@@ -32,4 +33,4 @@ let BlogSchema = new mongoose.Schema(
 	}
 );
 
-module.exports = mongoose.model("Blog", BlogSchema);
+module.exports = mongoose.model("Book", BookSchema);

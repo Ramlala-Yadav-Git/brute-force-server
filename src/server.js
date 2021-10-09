@@ -4,7 +4,7 @@ const { cloudinaryConfig } = require("./configs/cloudinaryConfig");
 const cors = require("cors");
 const userController = require("./controllers/user.controller");
 const topicsController = require("./controllers/topics.controller");
-const blogsController = require("./controllers/blog.controller");
+const bookController = require("./controllers/book.controller");
 const routeController = require("./routes/routes");
 const connect = require("./configs/db");
 
@@ -20,7 +20,7 @@ app.use("*", cloudinaryConfig);
 
 app.use("/users", userController);
 app.use("/topics", topicsController);
-app.use("/blogs", blogsController);
+app.use("/books", bookController);
 app.use("/", routeController);
 
 const port = process.env.SERVER_PORT || "2345";
