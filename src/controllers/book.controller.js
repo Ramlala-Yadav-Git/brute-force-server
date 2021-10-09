@@ -58,6 +58,7 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
 	try {
 		const blog = await Blog.findById(req.params.id)
+			.populate("seller")
 			.populate("comments.author")
 			.lean()
 			.exec();

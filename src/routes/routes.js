@@ -4,25 +4,48 @@ const Blog = require("../models/book.model");
 const Topic = require("../models/topics.model");
 const router = express.Router();
 
-router.post("/:id/follow/:followingid", async (req, res) => {
+router.post("/mybook/:id", async (req, res) => {
 	let user;
-	let following;
+	let book;
+	// console.log(req.params.id);
 	try {
 		user = await User.findById(req.params.id).lean().exec();
-		following = await User.findById(req.params.followingid).lean().exec();
-		if (user.following.indexOf(req.params.followingid) === -1) {
-			const followingList = [...user.following, req.params.followingid];
-			user = await User.findByIdAndUpdate(req.params.id, {
-				following: followingList,
-			});
-		}
-		if (following.followers.indexOf(req.params.id) === -1) {
-			const followerList = [...user.followers, req.params.id];
-			following = await User.findByIdAndUpdate(req.params.followingid, {
-				followers: followerList,
-			});
-		}
-		res.status(200).send({ status: "success", message: "Added Follower" });
+		book = await Blog.find().populate("seller").lean().exec();
+		const data = book.filter((item) => {
+			return user.email === item.seller.email;
+		});
+		res.status(201).send({ data });
+	} catch (e) {
+		return res
+			.status(400)
+			.send({ status: "failed", message: "Something went wrong" });
+	}
+});
+router.post("/localbook/:id", async (req, res) => {
+	let user;
+	let book;
+	try {
+		user = await User.findById(req.params.id).lean().exec();
+		book = await Blog.find().populate("seller").lean().exec();
+		data = book.filter(
+			(item) =>
+				user.email !== item.seller.email && user.location === item.location
+		);
+		res.status(201).send({ data });
+	} catch (e) {
+		return res
+			.status(400)
+			.send({ status: "failed", message: "Something went wrong" });
+	}
+});
+router.post("/globalbook/:id", async (req, res) => {
+	let user;
+	let book;
+	try {
+		user = await User.findById(req.params.id).lean().exec();
+		book = await Blog.find().populate("seller").lean().exec();
+		const data = book.filter((item) => user.email !== item.seller.email);
+		res.status(201).send({ data });
 	} catch (e) {
 		return res
 			.status(400)
