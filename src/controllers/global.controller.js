@@ -1,39 +1,30 @@
-
 const express = require("express");
 
-const router = express.Router()
+const router = express.Router();
 
-
-const GlobalData = require("../models/topics.model")
-
+const GlobalData = require("../models/topics.model");
 
 router.get("/", async function (req, res) {
-
-    return res.status(200).json("hello")
-})
+	try {
+		const data = await GlobalData.find().populate("author").lean().exec();
+		res.status(200).json({ data });
+	} catch (e) {
+		return res.status(400).json({
+			error: "Something went wrong",
+		});
+	}
+});
 
 router.post("/", async function (req, res) {
-    const text = req.body.text;
-
-    try {
-        if (!text) {
-            return res.status(400).json({
-                error: true,
-                message: "Please add required data"
-            })
-        }
-
-        const comment = await GlobalData.create()
-    }
-
-    catch (err) {
-        console.log(err);
-        return res.status(400).json({
-            error: "Something went wrong"
-        })
-    }
-
-})
-
+	try {
+		const comment = await GlobalData.create(req.body);
+		res.status(201).send({ data: comment });
+	} catch (err) {
+		console.log(err);
+		return res.status(400).json({
+			error: "Something went wrong",
+		});
+	}
+});
 
 module.exports = router;
