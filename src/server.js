@@ -23,7 +23,7 @@ app.use("/topics", topicsController);
 app.use("/blogs", blogsController);
 app.use("/", routeController);
 
-const port = process.env.SERVER_PORT || "2345";
+const port = process.env.PORT || "2345";
 
 const start = async () => {
 	await connect();
