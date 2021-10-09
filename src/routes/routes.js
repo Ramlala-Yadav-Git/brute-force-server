@@ -52,7 +52,6 @@ router.post("/globalbook/:id", async (req, res) => {
 			.send({ status: "failed", message: "Something went wrong" });
 	}
 });
-
 router.post("/:id/book/:bookid", async (req, res) => {
 	let user;
 	let book;
@@ -106,19 +105,26 @@ router.patch("/:id/book/:bookid", async (req, res) => {
 			.send({ status: "failed", message: "Something went wrong" });
 	}
 });
-router.get("/trending", async (req, res) => {
-	let trending;
+router.get("/:id/result/:query", async (req, res) => {
+	let user;
+	let book;
 	try {
-		trending = await Blog.find()
-			.sort({ claps: -1 })
-			.populate("author")
-			.populate("topic")
+		user = await User.findById(req.params.id).lean().exec();
+		book = await Blog.find()
 			.populate("comments.author")
-			.limit(6)
+			.populate("seller")
 			.lean()
 			.exec();
-		res.status(200).send({ trending });
+		const data = book.filter((item) => {
+			st = item.title.toLowerCase().split(" ").join("");
+			return (
+				st.includes(req.params.query.toLowerCase()) &&
+				item.seller.email !== user.email
+			);
+		});
+		res.status(200).send({ data });
 	} catch (e) {
+		console.log(e);
 		return res
 			.status(400)
 			.send({ status: "failed", message: "Something went wrong" });
